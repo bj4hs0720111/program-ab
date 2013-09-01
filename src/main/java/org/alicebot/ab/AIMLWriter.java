@@ -1,4 +1,7 @@
 package org.alicebot.ab;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /* Program AB Reference AIML 2.0 implementation
         Copyright (C) 2013 ALICE A.I. Foundation
         Contact: info@alicebot.org
@@ -23,6 +26,7 @@ package org.alicebot.ab;
  * Helper class to write some custom AIML
  */
 public class AIMLWriter {
+	private static final Logger log = LoggerFactory.getLogger(AIMLWriter.class);
              public static String[][] relatives = {
                      // aunt uncle nephew niece grandma grandpa
                      {"aunt", "her", "who", "aunt"},
@@ -76,7 +80,7 @@ public class AIMLWriter {
 
 
 
-            System.out.println(aiml);
+            log.info(aiml);
         }
     }
 }

@@ -19,15 +19,25 @@ package org.alicebot.ab;
         Boston, MA  02110-1301, USA.
 */
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * implements AIML Sets
  */
 public class AIMLSet extends HashSet<String> {
+	private static final Logger log = LoggerFactory.getLogger(AIMLSet.class);
     public String setName;
     int maxLength = 1; // there are no empty sets
     String host; // for external sets
@@ -45,27 +55,27 @@ public class AIMLSet extends HashSet<String> {
         if (setName.equals(MagicStrings.natural_number_set_name))  maxLength = 1;
     }
     public boolean contains(String s) {
-        //if (isExternal)  System.out.println("External "+setName+" contains "+s+"?");
-        //else  System.out.println("Internal "+setName+" contains "+s+"?");
+        //if (isExternal)  log.info("External "+setName+" contains "+s+"?");
+        //else  log.info("Internal "+setName+" contains "+s+"?");
         if (isExternal && MagicBooleans.enable_external_sets) {
             String[] split = s.split(" ");
             if (split.length > maxLength) return false;
             String query = MagicStrings.set_member_string+setName.toUpperCase()+" "+s;
             String response = Sraix.sraix(null, query, "false", null, host, botid, null, "0");
-            System.out.println("External "+setName+" contains "+s+"? "+response);
+            log.info("External "+setName+" contains "+s+"? "+response);
             if (response.equals("true")) return true;
             else return false;
         } else if (setName.equals(MagicStrings.natural_number_set_name)) {
             Pattern numberPattern = Pattern.compile("[0-9]+");
             Matcher numberMatcher = numberPattern.matcher(s);
             Boolean isanumber = numberMatcher.matches();
-            //System.out.println("AIMLSet isanumber '"+s+"' "+isanumber);
+            //log.info("AIMLSet isanumber '"+s+"' "+isanumber);
             return isanumber;
         }
         else return super.contains(s);
     }
     public  void writeAIMLSet () {
-        System.out.println("Writing AIML Set "+setName);
+        log.info("Writing AIML Set "+setName);
         try{
             // Create file
             FileWriter fstream = new FileWriter(MagicStrings.sets_path+"/"+setName+".txt");
@@ -78,7 +88,7 @@ public class AIMLSet extends HashSet<String> {
             //Close the output stream
             out.close();
         }catch (Exception e){//Catch exception if any
-            System.err.println("Error: " + e.getMessage());
+            log.error("Cannot write AIML set " + setName + ": " + e, e);
         }
     }
     public int readAIMLSetFromInputStream(InputStream in, Bot bot)  {
@@ -98,7 +108,7 @@ public class AIMLSet extends HashSet<String> {
                         botid = splitLine[2];
                         maxLength = Integer.parseInt(splitLine[3]);
                         isExternal = true;
-                        System.out.println("Created external set at "+host+" "+botid);
+                        log.info("Created external set at "+host+" "+botid);
                     }
                 }
                 else {
@@ -106,7 +116,7 @@ public class AIMLSet extends HashSet<String> {
                     String [] splitLine = strLine.split(" ");
                     int length = splitLine.length;
                     if (length > maxLength) maxLength = length;
-                    //System.out.println("readAIMLSetFromInputStream "+strLine);
+                    //log.info("readAIMLSetFromInputStream "+strLine);
                     add(strLine.trim());
                 }
                 /*Category c = new Category(0, "ISA"+setName.toUpperCase()+" "+strLine.toUpperCase(), "*", "*", "true", MagicStrings.null_aiml_file);
@@ -119,20 +129,21 @@ public class AIMLSet extends HashSet<String> {
     }
 
     public void readAIMLSet (Bot bot) {
-        System.out.println("Reading AIML Set "+MagicStrings.sets_path+"/"+setName+".txt");
+        final String setPath = MagicStrings.sets_path+"/"+setName+".txt";
+		log.info("Reading AIML Set " + setPath);
         try{
             // Open the file that is the first
             // command line parameter
-            File file = new File(MagicStrings.sets_path+"/"+setName+".txt");
+            File file = new File(setPath);
             if (file.exists()) {
-                FileInputStream fstream = new FileInputStream(MagicStrings.sets_path+"/"+setName+".txt");
+                FileInputStream fstream = new FileInputStream(setPath);
                 // Get the object
                 readAIMLSetFromInputStream(fstream, bot);
                 fstream.close();
             }
-            else System.out.println(MagicStrings.sets_path+"/"+setName+".txt not found");
+            else log.info(MagicStrings.sets_path+"/"+setName+".txt not found");
         }catch (Exception e){//Catch exception if any
-            System.err.println("Error: " + e.getMessage());
+            log.error("Cannot read AIML set '" + setPath + "': " + e, e);
         }
 
     }

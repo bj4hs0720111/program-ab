@@ -1,5 +1,10 @@
 package org.alicebot.ab;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+
+import org.alicebot.ab.utils.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /* Program AB Reference AIML 2.0 implementation
         Copyright (C) 2013 ALICE A.I. Foundation
         Contact: info@alicebot.org
@@ -19,12 +24,11 @@ import java.io.*;
         Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
         Boston, MA  02110-1301, USA.
 */
-
-import org.alicebot.ab.utils.IOUtils;
 /**
  * Class encapsulating a chat session between a bot and a client
  */
 public class Chat {
+	private static final Logger log = LoggerFactory.getLogger(Chat.class);
     public Bot bot;
     public String customerId = MagicStrings.unknown_customer_id;
     public History<History> thatHistory= new History<History>("that");
@@ -87,7 +91,7 @@ public class Chat {
                 System.out.print("Human: ");
 				request = IOUtils.readInputTextLine();
                 response = multisentenceRespond(request);
-                System.out.println("Robot: "+response);
+                log.info("Robot: "+response);
                 bw.write("Human: "+request);
                 bw.newLine();
                 bw.write("Robot: "+response);
@@ -118,7 +122,7 @@ public class Chat {
         String sentences[] = bot.preProcessor.sentenceSplit(normResponse);
         for (int i = 0; i < sentences.length; i++) {
           that = sentences[i];
-          //System.out.println("That "+i+" '"+that+"'");
+          //log.info("That "+i+" '"+that+"'");
           if (that.trim().equals("")) that = MagicStrings.default_that;
           contextThatHistory.add(that);
         }
@@ -156,20 +160,20 @@ public class Chat {
         try {
         String norm = bot.preProcessor.normalize(request);
         norm = JapaneseTokenizer.morphSentence(norm);
-        if (MagicBooleans.trace_mode) System.out.println("normalized = "+norm);
+        log.debug("normalized = "+norm);
         String sentences[] = bot.preProcessor.sentenceSplit(norm);
         History<String> contextThatHistory = new History<String>("contextThat");
         for (int i = 0; i < sentences.length; i++) {
-            //System.out.println("Human: "+sentences[i]);
+            //log.info("Human: "+sentences[i]);
             AIMLProcessor.trace_count = 0;
             String reply = respond(sentences[i], contextThatHistory);
             response += "  "+reply;
-            //System.out.println("Robot: "+reply);
+            //log.info("Robot: "+reply);
         }
         requestHistory.add(request);
         responseHistory.add(response);
         thatHistory.add(contextThatHistory);
-        //if (MagicBooleans.trace_mode)  System.out.println(matchTrace);
+        //if (MagicBooleans.trace_mode)  log.info(matchTrace);
         } catch (Exception ex) {
             ex.printStackTrace();
             return MagicStrings.error_bot_response;

@@ -5,10 +5,14 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * This class is here to simulate a Contacts database for the purpose of testing contactaction.aiml
  */
 public class Contact {
+	private static final Logger log = LoggerFactory.getLogger(Contact.class);
     public static int contactCount=0;
     public static HashMap<String, Contact> idContactMap = new HashMap<String, Contact>();
     public static HashMap<String, String> nameIdMap = new HashMap<String, String>();
@@ -20,7 +24,7 @@ public class Contact {
     public static String multipleIds(String contactName) {
         String patternString = " ("+contactName.toUpperCase()+") ";
         while (patternString.contains(" ")) patternString = patternString.replace(" ", "(.*)");
-        //System.out.println("Pattern='"+patternString+"'");
+        //log.info("Pattern='"+patternString+"'");
         Pattern pattern = Pattern.compile(patternString);
         Set<String> keys = nameIdMap.keySet();
         String result="";
@@ -38,7 +42,7 @@ public class Contact {
     public static String contactId(String contactName) {
         String patternString = " "+contactName.toUpperCase()+" ";
         while (patternString.contains(" ")) patternString = patternString.replace(" ", ".*");
-        //System.out.println("Pattern='"+patternString+"'");
+        //log.info("Pattern='"+patternString+"'");
         Pattern pattern = Pattern.compile(patternString);
         Set<String> keys = nameIdMap.keySet();
         String result="unknown";
@@ -100,7 +104,7 @@ public class Contact {
     public void addName (String name) {
         displayName = name;
         nameIdMap.put(displayName.toUpperCase(), contactId);
-        //System.out.println(nameIdMap.toString());
+        //log.info(nameIdMap.toString());
     }
     public void addBirthday(String birthday) {
         this.birthday = birthday;

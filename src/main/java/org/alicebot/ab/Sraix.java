@@ -18,18 +18,21 @@ package org.alicebot.ab;
         Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
         Boston, MA  02110-1301, USA.
 */
-import org.alicebot.ab.utils.CalendarUtils;
-import org.alicebot.ab.utils.NetworkUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.alicebot.ab.utils.CalendarUtils;
+import org.alicebot.ab.utils.NetworkUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class Sraix {
 
+	private static final Logger log = LoggerFactory.getLogger(Sraix.class);
     public static HashMap<String, String> custIdMap = new HashMap<String, String>();
 
     private static String custid = "0"; // customer ID number for Pandorabots
@@ -47,7 +50,7 @@ public class Sraix {
         return response;
     }
     public static String sraixPandorabots(String input, Chat chatSession, String host, String botid) {
-        //System.out.println("Entering SRAIX with input="+input+" host ="+host+" botid="+botid);
+        //log.info("Entering SRAIX with input="+input+" host ="+host+" botid="+botid);
         String responseContent = pandorabotsRequest(input, host, botid);
         if (responseContent == null) return MagicStrings.sraix_failed;
         else return pandorabotsResponse(responseContent, chatSession, host, botid);
@@ -57,9 +60,9 @@ public class Sraix {
             custid = "0";
             String key = host+":"+botid;
             if (custIdMap.containsKey(key)) custid = custIdMap.get(key);
-            //System.out.println("--> custid = "+custid);
+            //log.info("--> custid = "+custid);
             String spec = NetworkUtils.spec(host, botid, custid, input);
-            //System.out.println("Spec = "+spec);
+            //log.info("Spec = "+spec);
 			String responseContent = NetworkUtils.responseContent(spec);
             return responseContent;
         } catch (Exception ex) {
@@ -80,7 +83,7 @@ public class Sraix {
             if (n2 > 0) custid = custid.substring(0, n2);
             else custid = "0";
             String key = host+":"+botid;
-            //System.out.println("--> Map "+key+" --> "+custid);
+            //log.info("--> Map "+key+" --> "+custid);
             custIdMap.put(key, custid);
         }
         if (botResponse.endsWith(".")) botResponse = botResponse.substring(0, botResponse.length()-1);   // snnoying Pandorabots extra "."
@@ -100,16 +103,16 @@ public class Sraix {
             input = input.trim();
             input = input.replace(" ","+");
             int offset = CalendarUtils.timeZoneOffset();
-            //System.out.println("OFFSET = "+offset);
+            //log.info("OFFSET = "+offset);
             String locationString = "";
             if (chatSession.locationKnown) {
                 locationString = "&location="+chatSession.latitude+","+chatSession.longitude;
             }
             // https://weannie.pannous.com/api?input=when+is+daylight+savings+time+in+the+us&locale=en_US&login=pandorabots&ip=169.254.178.212&botid=0&key=CKNgaaVLvNcLhDupiJ1R8vtPzHzWc8mhIQDFSYWj&exclude=Dialogues,ChatBot&out=json
             String url = "https://weannie.pannous.com/api?input="+input+"&locale=en_US&timeZone="+offset+locationString+"&login="+MagicStrings.pannous_login+"&ip="+NetworkUtils.localIPAddress()+"&botid=0&key="+MagicStrings.pannous_api_key+"&exclude=Dialogues,ChatBot&out=json";
-            if (MagicBooleans.trace_mode) System.out.println("Sraix url='"+url+"'");
+            log.debug("Sraix url='"+url+"'");
             String page = NetworkUtils.responseContent(url);
-            if (MagicBooleans.trace_mode) System.out.println( "Sraix: "+page);
+            log.debug( "Sraix: "+page);
             String text="";
             String imgRef="";
             if (page == null || page.length() == 0) {
@@ -129,9 +132,9 @@ public class Sraix {
                             JSONObject sObj = (JSONObject) obj;
                             String date = sObj.getString("date");
                             date = date.substring(0, "2012-10-24T14:32".length());
-                            //System.out.println("date="+date);
+                            //log.info("date="+date);
                             String duration = sObj.getString("duration");
-                            //System.out.println("duration="+duration);
+                            //log.info("duration="+duration);
 
                             Pattern datePattern = Pattern.compile("(.*)-(.*)-(.*)T(.*):(.*)");
                             Matcher m = datePattern.matcher(date);
@@ -174,11 +177,11 @@ public class Sraix {
                         JSONArray arr = actions.getJSONObject("show").getJSONArray(
                                 "images");
                         int i = (int)(arr.length() * Math.random());
-                        //for (int j = 0; j < arr.length(); j++) System.out.println(arr.getString(j));
+                        //for (int j = 0; j < arr.length(); j++) log.info(arr.getString(j));
                         imgRef = arr.getString(i);
                         if (imgRef.startsWith("//")) imgRef = "http:"+imgRef;
                         imgRef = "<a href=\""+imgRef+"\"><img src=\""+imgRef+"\"/></a>";
-                        //System.out.println("IMAGE REF="+imgRef);
+                        //log.info("IMAGE REF="+imgRef);
 
                     }
                 }
@@ -190,11 +193,11 @@ public class Sraix {
                     text = text.replaceAll("\\[(.*)\\]", "");
                     String[] sentences;
                     sentences = text.split("\\. ");
-                    //System.out.println("Sraix: text has "+sentences.length+" sentences:");
+                    //log.info("Sraix: text has "+sentences.length+" sentences:");
                     String clippedPage = sentences[0];
                     for (int i = 1; i < sentences.length; i++) {
                         if (clippedPage.length() < 500) clippedPage = clippedPage + ". "+sentences[i];
-                        //System.out.println(i+". "+sentences[i]);
+                        //log.info(i+". "+sentences[i]);
                     }
 
                     clippedPage = clippedPage + " " + imgRef;
@@ -203,7 +206,7 @@ public class Sraix {
             }
         } catch (Exception ex)   {
             ex.printStackTrace();
-            System.out.println("Sraix '" + input + "' failed");
+            log.info("Sraix '" + input + "' failed");
         }
         return MagicStrings.sraix_failed;
     } // sraixPannous

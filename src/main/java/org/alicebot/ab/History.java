@@ -1,4 +1,7 @@
 package org.alicebot.ab;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /* Program AB Reference AIML 2.0 implementation
         Copyright (C) 2013 ALICE A.I. Foundation
         Contact: info@alicebot.org
@@ -25,6 +28,7 @@ package org.alicebot.ab;
  * @param <T>    type of history object
  */
 public class History<T> {
+	private static final Logger log = LoggerFactory.getLogger(History.class);
     private Object[] history;
     private String name;
 
@@ -91,8 +95,8 @@ public class History<T> {
     public void printHistory() {
         int i;
         for (i = 0; get(i) != null; i++) {
-            System.out.println(name+"History "+(i+1)+" = "+get(i));
-            System.out.println(String.valueOf(get(i).getClass()).contains("History"));
+            log.info(name+"History "+(i+1)+" = "+get(i));
+            log.info("{}", String.valueOf(get(i).getClass()).contains("History"));
             if (String.valueOf(get(i).getClass()).contains("History")) ((History)get(i)).printHistory();
         }
     }

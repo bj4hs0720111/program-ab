@@ -10,16 +10,16 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Enumeration;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-
-import org.w3c.dom.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class NetworkUtils {
-
+	private static final Logger log = LoggerFactory
+			.getLogger(NetworkUtils.class);
 
     public static String localIPAddress() {
         try {
@@ -31,7 +31,7 @@ public class NetworkUtils {
                         String ipAddress =  inetAddress.getHostAddress().toString();
                         int p = ipAddress.indexOf("%");
                         if (p > 0) ipAddress = ipAddress.substring(0, p);
-                        System.out.println("--> localIPAddress = "+ipAddress);
+                        log.info("--> localIPAddress = {}", ipAddress);
                         return ipAddress;
                     }
                 }
@@ -61,7 +61,7 @@ public class NetworkUtils {
 
 
 	public static String spec(String host, String botid, String custid, String input) {
-		//System.out.println("--> custid = "+custid);
+		log.trace("--> custid = {}", custid);
 		String spec = "";
 		if (custid.equals("0"))      // get custid on first transaction with Pandorabots
 			spec =    String.format("%s?botid=%s&input=%s",

@@ -5,9 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class IOUtils {
-
+	private static final Logger log = LoggerFactory.getLogger(IOUtils.class);
 
 	public static String readInputTextLine() {
         BufferedReader lineOfText = new BufferedReader(new InputStreamReader(System.in));
@@ -23,7 +26,7 @@ public class IOUtils {
 
 	public static String system(String evaluatedContents, String failedString) {
 		Runtime rt = Runtime.getRuntime();
-        System.out.println("System "+evaluatedContents);
+        log.info("System {}", evaluatedContents);
         try {
             Process p = rt.exec(evaluatedContents);
             InputStream istrm = p.getInputStream();
@@ -34,7 +37,7 @@ public class IOUtils {
             while ((data = buffrdr.readLine()) != null) {
                 result += data+"\n";
             }
-            System.out.println("Result = "+result);
+            log.info("Result = {}", result);
             return result;
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -20,17 +20,21 @@ package org.alicebot.ab;
 */
 import java.util.Comparator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * structure representing an AIML category and operations on Category
  */
 public class Category {
+	private static final Logger log = LoggerFactory.getLogger(Category.class);
     private String pattern;
     private String that;
     private String topic;
     private String template;
     private String filename;
     private int activationCnt;
-    private int categoryNumber; // for loading order
+    private final int categoryNumber; // for loading order
     public static int categoryCnt = 0;
     private AIMLSet matches;
 
@@ -184,7 +188,7 @@ public class Category {
     public void addMatch (String input) {
         if (matches == null) {
             String setName = this.inputThatTopic().replace("*", "STAR").replace("_", "UNDERSCORE").replace(" ","-").replace("<THAT>","THAT").replace("<TOPIC>","TOPIC");
-           // System.out.println("Created match set "+setName);
+           // log.info("Created match set "+setName);
             matches = new AIMLSet(setName);
         }
         matches.add(input);
@@ -221,7 +225,7 @@ public class Category {
      */
     public static Category IFToCategory(String IF) {
         String[] split = IF.split(MagicStrings.aimlif_split_char);
-        //System.out.println("Read: "+split);
+        //log.info("Read: "+split);
         return new Category(Integer.parseInt(split[0]), split[1], split[2], split[3], lineToTemplate(split[4]), split[5]);
      }
 
@@ -231,7 +235,7 @@ public class Category {
      * @return           category in AIML format
      */
     public static String categoryToIF(Category category) {
-        //System.out.println("categoryToIF: template="+templateToLine(category.getTemplate()));
+        //log.info("categoryToIF: template="+templateToLine(category.getTemplate()));
         String c = MagicStrings.aimlif_split_char;
         return category.getActivationCnt()+c+category.getPattern()+c+category.getThat()+c+category.getTopic()+c+templateToLine(category.getTemplate())+c+category.getFilename();
     }
@@ -253,7 +257,7 @@ public class Category {
             pattern = pattern+" "+w;
         }
         pattern = pattern.trim();
-        if (pattern.contains("type")) System.out.println("Rebuilt pattern "+pattern);
+        if (pattern.contains("type")) log.info("Rebuilt pattern "+pattern);
 
         String NL = System.getProperty("line.separator");
         NL = "\n";
@@ -281,7 +285,7 @@ public class Category {
         for (int i = 0; i < words.length; i++) {
             //String word = words[i];
             /*if (!(word.matches("[\\p{Hiragana}\\p{Katakana}\\p{Han}\\p{Latin}]*+") || word.equals("*") || word.equals("_"))) {
-                System.out.println("Invalid pattern word "+word);
+                log.info("Invalid pattern word "+word);
                 return false;
             }*/
         }
@@ -332,7 +336,7 @@ public class Category {
         this.activationCnt = activationCnt;
         matches = null;
         this.categoryNumber = categoryCnt++;
-        //System.out.println("Creating "+categoryNumber+" "+inputThatTopic());
+        log.trace("Creating {} {}", categoryNumber, inputThatTopic());
     }
 
     /**
@@ -355,7 +359,8 @@ public class Category {
      */
     public static Comparator<Category> ACTIVATION_COMPARATOR = new Comparator<Category>()
     {
-        public int compare(Category c1, Category c2)
+        @Override
+		public int compare(Category c1, Category c2)
         {
             return c2.getActivationCnt() - c1.getActivationCnt();
         }
@@ -365,7 +370,8 @@ public class Category {
      */
     public static Comparator<Category> PATTERN_COMPARATOR = new Comparator<Category>()
     {
-        public int compare(Category c1, Category c2)
+        @Override
+		public int compare(Category c1, Category c2)
         {
             return String.CASE_INSENSITIVE_ORDER.compare(c1.inputThatTopic(), c2.inputThatTopic());
         }
@@ -375,7 +381,8 @@ public class Category {
      */
     public static Comparator<Category> CATEGORY_NUMBER_COMPARATOR = new Comparator<Category>()
     {
-        public int compare(Category c1, Category c2)
+        @Override
+		public int compare(Category c1, Category c2)
         {
             return c1.getCategoryNumber() - c2.getCategoryNumber();
         }

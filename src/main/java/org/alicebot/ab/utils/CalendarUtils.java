@@ -6,9 +6,12 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class CalendarUtils {
-
+	private static final Logger log = LoggerFactory.getLogger(CalendarUtils.class);
 
 	public static int timeZoneOffset() {
 		Calendar cal = Calendar.getInstance();
@@ -37,7 +40,7 @@ public class CalendarUtils {
         if (jformat == null) jformat = "EEE MMM dd HH:mm:ss zzz yyyy";
         if (locale == null) locale = Locale.US.getISO3Country();
         if (timezone == null) timezone = TimeZone.getDefault().getDisplayName();
-        //System.out.println("Format = "+format+" Locale = "+locale+" Timezone = "+timezone);
+        //log.info("Format = "+format+" Locale = "+locale+" Timezone = "+timezone);
         String dateAsString = new Date().toString();
         try {
         SimpleDateFormat simpleDateFormat =
@@ -45,9 +48,10 @@ public class CalendarUtils {
           dateAsString = simpleDateFormat.format(new Date());
         }
         catch (Exception ex) {
-            System.out.println("CalendarUtils.date Bad date: Format = "+jformat+" Locale = "+locale+" Timezone = "+timezone);
+            log.info("CalendarUtils.date Bad date: Format = {} Locale = {} Timezone = {}",
+            		jformat, locale, timezone);
         }
-        System.out.println("CalendarUtils.date: "+dateAsString);
+        log.info("CalendarUtils.date: {}", dateAsString);
         return dateAsString;
     }
 }

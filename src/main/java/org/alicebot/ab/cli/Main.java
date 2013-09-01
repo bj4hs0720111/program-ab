@@ -19,9 +19,6 @@ package org.alicebot.ab.cli;
         Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
         Boston, MA  02110-1301, USA.
 */
-import org.alicebot.ab.*;
-import org.alicebot.ab.utils.IOUtils;
-
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -29,19 +26,34 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 
+import org.alicebot.ab.AB;
+import org.alicebot.ab.AIMLProcessor;
+import org.alicebot.ab.Bot;
+import org.alicebot.ab.Category;
+import org.alicebot.ab.Chat;
+import org.alicebot.ab.Graphmaster;
+import org.alicebot.ab.MagicBooleans;
+import org.alicebot.ab.MagicStrings;
+import org.alicebot.ab.PCAIMLProcessorExtension;
+import org.alicebot.ab.Timer;
+import org.alicebot.ab.utils.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Main {
+	private static final Logger log = LoggerFactory.getLogger(Main.class);
     public static void main (String[] args) {
         MagicStrings.root_path = System.getProperty("user.dir");
-        System.out.println("Working Directory = " + MagicStrings.root_path);
+        log.info("Working Directory = " + MagicStrings.root_path);
         AIMLProcessor.extension =  new PCAIMLProcessorExtension();
         mainFunction(args);
     }
     public static void mainFunction (String[] args) {
         String botName = "super";
         String action = "chat";
-        System.out.println(MagicStrings.programNameVersion);
+        log.info(MagicStrings.programNameVersion);
         for (String s : args) {
-            System.out.println(s);
+            log.info(s);
             String[] splitArg = s.split("=");
             if (splitArg.length >= 2) {
                 String option = splitArg[0];
@@ -52,7 +64,7 @@ public class Main {
                 else MagicBooleans.trace_mode = false;
             }
         }
-        System.out.println("trace mode = "+MagicBooleans.trace_mode);
+        log.info("trace mode = "+MagicBooleans.trace_mode);
         Graphmaster.enableShortCuts = true;
         Timer timer = new Timer();
         Bot bot = new Bot(botName, MagicStrings.root_path, action); //
@@ -102,11 +114,11 @@ public class Main {
             else if (textLine.equals("ab")) testAB(bot);
             else {
                 String request = textLine;
-                if (MagicBooleans.trace_mode) System.out.println("STATE="+request+":THAT="+chatSession.thatHistory.get(0).get(0)+":TOPIC="+chatSession.predicates.get("topic"));
+                log.debug("STATE="+request+":THAT="+chatSession.thatHistory.get(0).get(0)+":TOPIC="+chatSession.predicates.get("topic"));
                 String response = chatSession.multisentenceRespond(request);
                 while (response.contains("&lt;")) response = response.replace("&lt;","<");
                 while (response.contains("&gt;")) response = response.replace("&gt;",">");
-                System.out.println("Robot: "+response);
+                log.info("Robot: "+response);
 
             }
 
@@ -114,20 +126,20 @@ public class Main {
     }
     public static void testBotChat () {
         Bot bot = new Bot("alice");
-        System.out.println(bot.brain.upgradeCnt+" brain upgrades");
+        log.info(bot.brain.upgradeCnt+" brain upgrades");
         bot.brain.nodeStats();
         //bot.brain.printgraph();
         Chat chatSession = new Chat(bot);
         String request = "Hello.  How are you?  What is your name?  Tell me about yourself.";
         String response = chatSession.multisentenceRespond(request);
-        System.out.println("Human: "+request);
-        System.out.println("Robot: "+response);
+        log.info("Human: "+request);
+        log.info("Robot: "+response);
     }
     public static void testSuite (Bot bot, String filename) {
         try{
             AB.passed.readAIMLSet(bot);
             AB.testSet.readAIMLSet(bot);
-            System.out.println("Passed "+AB.passed.size()+" samples.");
+            log.info("Passed "+AB.passed.size()+" samples.");
             String textLine="";
             Chat chatSession = new Chat(bot);
             FileInputStream fstream = new FileInputStream(filename);
@@ -145,11 +157,11 @@ public class Main {
             for (String request : sampleArray) {
                 if (request.startsWith("Human: ")) request = request.substring("Human: ".length(), request.length());
                 Category c = new Category(0, bot.preProcessor.normalize(request), "*", "*", MagicStrings.blank_template, MagicStrings.null_aiml_file);
-                if (AB.passed.contains(request)) System.out.println("--> Already passed "+request);
+                if (AB.passed.contains(request)) log.info("--> Already passed "+request);
                 else if (!bot.deletedGraph.existsCategory(c) && !AB.passed.contains(request)) {
                     String response = chatSession.multisentenceRespond(request);
-                    System.out.println(count+". Human: "+request);
-                    System.out.println(count+". Robot: "+response);
+                    log.info(count+". Human: "+request);
+                    log.info(count+". Robot: "+response);
 					textLine = IOUtils.readInputTextLine();
                     AB.terminalInteractionStep(bot, request, textLine, c);
                     count += 1;
@@ -158,7 +170,7 @@ public class Main {
             //Close the input stream
             br.close();
         } catch (Exception e){//Catch exception if any
-            System.err.println("Error: " + e.getMessage());
+            log.error("testSuite Error: " + e, e);
         }
     }
 

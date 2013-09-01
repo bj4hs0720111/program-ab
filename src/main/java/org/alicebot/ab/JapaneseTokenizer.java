@@ -1,15 +1,17 @@
 package org.alicebot.ab;
 
-import net.reduls.sanmoku.Morpheme;
-import net.reduls.sanmoku.Tagger;
-
-//import org.atilika.kuromoji.Token;
-//import org.atilika.kuromoji.Tokenizer;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import net.reduls.sanmoku.Morpheme;
+import net.reduls.sanmoku.Tagger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+//import org.atilika.kuromoji.Token;
+//import org.atilika.kuromoji.Tokenizer;
 
 /**
  * Tokenize a Japanese language input by inserting spaces between words
@@ -17,6 +19,8 @@ import java.util.regex.Pattern;
  * see http://atilika.org/
  */
 public class JapaneseTokenizer {
+	private static final Logger log = LoggerFactory
+			.getLogger(JapaneseTokenizer.class);
     //static final Tokenizer tokenizer = Tokenizer.builder().build();
     static final Pattern tagPattern = Pattern.compile("(<.*>.*</.*>)|(<.*/>)");
     static Set<Character.UnicodeBlock> japaneseUnicodeBlocks = new HashSet<Character.UnicodeBlock>() {{
@@ -57,7 +61,7 @@ public class JapaneseTokenizer {
             if (j < sentence.length()) sentence = sentence.substring(j, sentence.length()); else sentence = "";
             System.out.print("Start index: " + matcher.start());
             System.out.print(" End index: " + matcher.end() + " ");
-            System.out.println(matcher.group());
+            log.info(matcher.group());
         }
         result += " "+buildFragment(sentence);
         while (result.contains("$ ")) result = result.replace("$ ", "$");
@@ -68,10 +72,10 @@ public class JapaneseTokenizer {
         String result = "";
         for (char c : sentence.toCharArray()) {
             if (japaneseUnicodeBlocks.contains(Character.UnicodeBlock.of(c))) {
-                //System.out.println(c + " is a Japanese character");
+                //log.info(c + " is a Japanese character");
                 result = result+" "+c+" ";
             } else {
-                //System.out.println(c + " is not a Japanese character");
+                //log.info(c + " is not a Japanese character");
                 result = result + c;
             }
         }
@@ -93,7 +97,7 @@ public class JapaneseTokenizer {
         for(Morpheme e : Tagger.parse(fragment)) {
             result += e.surface+" ";
             //
-            // System.out.println("Feature "+e.feature+" Surface="+e.surface);
+            // log.info("Feature "+e.feature+" Surface="+e.surface);
         }
         return result.trim();
     }
@@ -118,7 +122,7 @@ public class JapaneseTokenizer {
             if (j < sentence.length()) sentence = sentence.substring(j, sentence.length()); else sentence = "";
             //System.out.print("Start index: " + matcher.start());
             //System.out.print("End index: " + matcher.end() + " ");
-            //System.out.println(matcher.group());
+            //log.info(matcher.group());
         }
         result += " "+buildFragment(sentence);
         while (result.contains("$ ")) result = result.replace("$ ", "$");

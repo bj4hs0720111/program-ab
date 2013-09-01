@@ -18,23 +18,35 @@ package org.alicebot.ab;
         Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
         Boston, MA  02110-1301, USA.
 */
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Manage client predicates
  *
  */
 public class Predicates extends HashMap<String, String> {
-    /**
+	private static final long serialVersionUID = 1L;
+	private static final Logger log = LoggerFactory.getLogger(Predicates.class);
+	
+
+	/**
      * save a predicate value
      *
      * @param key         predicate name
      * @param value       predicate value
      * @return            predicate value
      */
-    public String put(String key, String value) {
-        if (MagicBooleans.trace_mode) System.out.println("Setting predicate "+key+" to "+value);
+    @Override
+	public String put(String key, String value) {
+        if (MagicBooleans.trace_mode) log.info("Setting predicate {} to {}", key, value);
         return super.put(key, value);
     }
 
@@ -88,7 +100,7 @@ public class Predicates extends HashMap<String, String> {
                 fstream.close();
             }
         }catch (Exception e){//Catch exception if any
-            System.err.println("Error: " + e.getMessage());
+            log.error("Cannot get predicate defaults from '" + filename + "': " + e, e);
         }
     }
 }
