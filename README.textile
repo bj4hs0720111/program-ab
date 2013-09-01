@@ -1,4 +1,6 @@
-h1. program-ab: Hendy's fork
+h1. Program AB: Hendy's fork
+
+Fork of Program AB, the reference implementation of the AIML 2.0 draft specification. AIML is a widely adopted standard for creating chat bots and mobile virtual assistants like ALICE, Mitsuku, English Tutor, The Professor, S.U.P.E.R. and many more.
 
 h2. TODO
 
