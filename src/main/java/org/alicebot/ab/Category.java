@@ -336,7 +336,8 @@ public class Category {
         this.activationCnt = activationCnt;
         matches = null;
         this.categoryNumber = categoryCnt++;
-        log.trace("Creating {} {}", categoryNumber, inputThatTopic());
+        // in Android, even this is too much for trace:
+        //log.trace("Creating {} {}", categoryNumber, inputThatTopic());
     }
 
     /**
