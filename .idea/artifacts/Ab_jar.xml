@@ -1,0 +1,18 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Ab:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Ab_jar</output-path>
+    <root id="archive" name="Ab.jar">
+      <element id="module-output" name="Ab" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jgoodies-common.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jgoodies-forms.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/json-20090211.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.2.1/lib/httpmime-4.2.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.2.1/lib/commons-codec-1.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.2.1/lib/httpclient-cache-4.2.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.2.1/lib/httpclient-4.2.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.2.1/lib/fluent-hc-4.2.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.2.1/lib/httpcore-4.2.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/httpcomponents-client-4.2.1/lib/commons-logging-1.1.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
