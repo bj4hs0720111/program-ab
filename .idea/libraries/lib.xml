@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/httpcomponents-client-4.2.1/lib/httpmime-4.2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/httpcomponents-client-4.2.1/lib/commons-codec-1.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/httpcomponents-client-4.2.1/lib/httpclient-cache-4.2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/httpcomponents-client-4.2.1/lib/httpclient-4.2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/httpcomponents-client-4.2.1/lib/fluent-hc-4.2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/httpcomponents-client-4.2.1/lib/httpcore-4.2.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/httpcomponents-client-4.2.1/lib/commons-logging-1.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/kuromoji-0.7.7/kuromoji-0.7.7/lib/kuromoji-0.7.7.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
