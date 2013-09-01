@@ -1,0 +1,9 @@
+h1. program-ab: Hendy's fork
+
+h2. TODO
+
+1. Build entirely with Maven, without embedded JARs in project sources [done]
+2. Run well with Android Gingerbread (API 9)
+3. Replace commons-logging dependency with SLF4J 1.6/1.7
+4. Replace json dependency with jackson 2.2
+5. Allow loading bot data files from classpath 
